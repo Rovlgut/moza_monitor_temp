@@ -21,7 +21,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='Moza Temp Monitor',
+    name='Moza_Temp_Monitor',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
