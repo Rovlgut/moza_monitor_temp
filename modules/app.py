@@ -484,9 +484,9 @@ class MonitorThread(Thread):
         file_path = self.app.entry_file_path.get()
         self.app.draw_plot(self.app.live_data)
         _cached_stamp = os.stat(file_path).st_mtime
-        wait_time = 2
+        wait_time = 5
+        logger.info(f"monitor_loop wait_time {wait_time}")   
         while self.running_monitor:        
-            logger.info(f"monitor_loop wait_time {wait_time}")   
             sleep(wait_time)
 
             stamp = os.stat(file_path).st_mtime
