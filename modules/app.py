@@ -390,10 +390,6 @@ class App(Tk):
                 "mos_temp": None,
                 "motor_stator_temp": None,
             })
-        
-        import json
-        with open('live_data', 'w') as f:
-            json.dump(self.live_data, f, indent=4, default=str)
 
     def start_monitor(self):
         if self.thread_monitor.is_alive():
