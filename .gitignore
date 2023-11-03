@@ -5,6 +5,7 @@ logs
 modules/__pycache__
 dist
 build
+data
 
 # File
 

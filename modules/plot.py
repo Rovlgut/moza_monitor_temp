@@ -37,9 +37,9 @@ def plot_figure(data, inside: bool = False):
     fig = plt.figure()
 
     ax = fig.add_subplot(111)
-    line1, = ax.plot(X, Y1, 'b', label=f'Контролер темп. (max: {max_Y1})s')
-    line2, = ax.plot(X, Y2, 'r', label=f'MOSFET темп. (max: {max_Y2})s')
-    line3, = ax.plot(X, Y3, 'g', label=f'Мотор статор темп. (max: {max_Y3})s')
+    line1, = ax.plot(X, Y1, 'b', label=f'Контролер темп. (max: {max_Y1})')
+    line2, = ax.plot(X, Y2, 'r', label=f'MOSFET темп. (max: {max_Y2})')
+    line3, = ax.plot(X, Y3, 'g', label=f'Мотор статор темп. (max: {max_Y3})')
     fig.subplots_adjust(left=0.07, bottom=0.07, right=0.99, top=0.99, wspace=0, hspace=0)
     ax.autoscale()
     ax.grid(axis='y')
