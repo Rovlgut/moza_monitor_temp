@@ -49,7 +49,7 @@ class App(Tk):
 
         self.__init_window()
 
-        self.thread_monitor = MonitorThread(target=self.monitor_loop, name="Monitor", args=[], daemon=True)
+        self.thread_monitor = MonitorThread(name="Monitor", args=[], daemon=True)
         self.thread_monitor.add_status_var(self.monitor_status)
         self.thread_monitor.add_app(self)
         
