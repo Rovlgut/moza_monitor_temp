@@ -1,8 +1,8 @@
 import os
 import re
 import matplotlib
-import base64
 
+from base64 import b64decode
 from tkinter import Tk, Frame, ttk, filedialog, StringVar,  messagebox, PhotoImage
 from tkinter.constants import *
 from datetime import datetime, timedelta
@@ -35,7 +35,7 @@ class App(Tk):
         Tk.__init__(self, *args, **kwargs)
         self.geometry("640x500")
         self.title('Moza мониторинг температуры')
-        icon_decode = base64.b64decode(icon_png)
+        icon_decode = b64decode(icon_png)
         icon = PhotoImage(data=icon_decode)
         self.iconphoto(True, icon)
 
@@ -136,10 +136,6 @@ class App(Tk):
         self.button_plot.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="e", padx=5, pady=5)
         column_frame_buttons += 1  # next column
         
-        # self.button_plot = ttk.Button(self.frame_buttons, text='Update', command=self.update_plot)
-        # self.button_plot.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="e", padx=5, pady=5)
-        # column_frame_buttons += 1  # next column
-        
         #### Next row
         row_frame_buttons += 1  # add row
         column_frame_buttons = 0  # back to first column
@@ -189,8 +185,6 @@ class App(Tk):
             ('Все файлы', '*.*')
         )
         base_file_path = filedialog.askopenfilename(initialdir=os.getcwd(), filetypes=filetypes)
-        # if os.path.dirname(os.path.realpath(base_file_path)) == os.getcwd():
-        #     base_file_path = os.path.basename(base_file_path) # set path only to current folder, remove full path
         self.entry_file_path.delete(0, END)
         self.entry_file_path.insert(0, base_file_path)
         logger.info(f"File path: '{base_file_path}'")
@@ -248,42 +242,11 @@ class App(Tk):
             messagebox.showinfo(title="Нет данных", message="Нет данных за данный период")
             return
 
-        # self.thread_plot = self.thread_plot.clone()
-        # self.thread_plot.start()
-        # self.thread_plot_open = True
-        
-        # if self.plot_canvas:
-        #     logger.info("self.plot_canvas.destroy()")
-        #     self.plot_canvas.destroy()
-        #     # self.plot_canvas.get_tk_widget().pack_forget()        
-        # if self.plot_toolbar: 
-        #     logger.info("self.plot_toolbar.destroy()")
-        #     self.plot_toolbar.destroy()
-        #     # self.plot_toolbar.pack_forget()
-
         if self.fig == None:
-            # self.clear_plot()
-            # fig, lines = plot_figure(self.filtered_log_data, inside=True)
-            # self.fig = fig
-            # self.lines = lines
-            # canvas = FigureCanvasTkAgg(fig, master=self.frame_plot)
-            # # self.plot_canvas.get_tk_widget().pack(fill="both", expand=1)
-            # self.plot_canvas = canvas.get_tk_widget()
-            # self.plot_canvas.pack(side=TOP, fill=BOTH, expand=1)
-            # # self.plot_canvas.draw()
-            # self.plot_toolbar = NavigationToolbar2Tk(canvas, self.frame_plot_toolbar)
             self.draw_plot(self.filtered_log_data)
         else:
             self.update_plot()
-    
-        # self.plot_toolbar.update()
-        # self.plot_toolbar.pack(side=TOP, fill=BOTH, expand=1)
-        # canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=1)
-        # canvas._tkcanvas.pack()
-        # else:
-        #     self.fig.set_data()
 
-        self.thread_plot_open = False
     
     def draw_plot(self, plot_data):
         self.clear_plot()
@@ -291,10 +254,8 @@ class App(Tk):
         self.fig = fig
         self.lines = lines
         canvas = FigureCanvasTkAgg(fig, master=self.frame_plot)
-        # self.plot_canvas.get_tk_widget().pack(fill="both", expand=1)
         self.plot_canvas = canvas.get_tk_widget()
         self.plot_canvas.pack(side=TOP, fill=BOTH, expand=1)
-        # self.plot_canvas.draw()
         self.plot_toolbar = NavigationToolbar2Tk(canvas, self.frame_plot_toolbar)
 
     def clear_plot(self):
@@ -316,31 +277,6 @@ class App(Tk):
 
         self.update_plot_data(plot_data)
 
-        # X = plot_data['X']
-        # Y1 = plot_data['Y1']
-        # Y2 = plot_data['Y2']
-        # Y3 = plot_data['Y3']
-
-        # max_Y1 = max(plot_data['Y1'])
-        # max_Y2 = max(plot_data['Y2'])
-        # max_Y3 = max(plot_data['Y3'])
-
-        # line1 = self.lines[0]
-        # line2 = self.lines[1]
-        # line3 = self.lines[2]
-        # line1.set_data(X, Y1)
-        # line2.set_data(X, Y2)
-        # line3.set_data(X, Y3)
-        # label1 = f'Контролер темп. (max: {max_Y1})'
-        # label2 = f'MOSFET темп. (max: {max_Y2})'
-        # label3 = f'Мотор статор темп. (max: {max_Y3})'
-        # ax = self.fig.gca()
-        # ax.relim()
-        # ax.autoscale()
-        # ax.legend((label1, label2, label3))
-        # self.fig.canvas.draw()
-        # self.fig.canvas.flush_events()
-
     def update_plot_live(self, data):
         plot_data = extract_data(self.live_data)
         self.update_plot_data(plot_data)
@@ -355,8 +291,6 @@ class App(Tk):
         max_Y1 = plot_data['max_Y1']
         max_Y2 = plot_data['max_Y2']
         max_Y3 = plot_data['max_Y3']
-
- 
             
         line1 = self.lines[0]
         line2 = self.lines[1]
@@ -400,7 +334,6 @@ class App(Tk):
             messagebox.showerror(title="Ошибка", message=f"Не верная дата.\nФормат времени HH:MM.\nДиапазон 00:00 - 23:59")
             return False
 
-
         filtered_data = []
         for row in self.log_data:
             if plot_dt_to > row['datetime'] > plot_dt_from:
@@ -415,7 +348,6 @@ class App(Tk):
         date_now = date_now.replace(second=30, microsecond=0)
         delta_from = date_now - timedelta(minutes=30)
 
-        
         def datetime_range(start, end, delta):
             current = start
             while current < end:
@@ -447,28 +379,10 @@ class App(Tk):
 
     def stop_monitor(self):
         logger.info("monitor stopping")
-        # self.running_monitor = False
-        logger.debug("self.running_monitor = False")
         self.button_monitor.configure(text='Отслеживать', command=self.start_monitor)
         logger.debug("button_monitor.configure")
         self.thread_monitor.stop()
         logger.debug("after thread_monitor.stop()")
-        # self.thread_monitor.join()
-        logger.debug("after thread_monitor.join()")
-
-    def monitor_loop(self):
-
-        file_path = self.entry_file_path.get()
-        self.draw_plot(self.live_data)
-        _cached_stamp = os.stat(file_path).st_mtime
-        wait_time = 5
-        while self.running_monitor:          
-            sleep(wait_time)
-
-            stamp = os.stat(file_path).st_mtime
-            if stamp != _cached_stamp:
-                _cached_stamp = stamp
-                self.update_data(file_path)
 
     def update_data(self, file_path):
         logger.info(f"modified file")
@@ -530,15 +444,14 @@ class MonitorThread(Thread):
         err_type = exc_value.__class__.__name__
         messagebox.showerror(title="Ошибка", message=f"Ошибка в скрипте {self.name}!\n\n{err_type}: {exc_value}")
 
-
-
     def monitor_loop(self):
         logger.info("start minitor loop")
         file_path = self.app.entry_file_path.get()
         self.app.draw_plot(self.app.live_data)
         _cached_stamp = os.stat(file_path).st_mtime
         wait_time = 2
-        while self.running_monitor:          
+        while self.running_monitor:        
+            logger.info(f"monitor_loop wait_time {wait_time}")   
             sleep(wait_time)
 
             stamp = os.stat(file_path).st_mtime
