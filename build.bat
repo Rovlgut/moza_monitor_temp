@@ -1,8 +1,7 @@
 pyinstaller ^
-    --onedir ^
+    --onefile ^
     --name "Moza Temp Monitor" ^
-    --add-data "moza.ico":"."
-    --contents-directory "Lib" ^
     --windowed ^
-    --icon moza.ico ^
+    --icon ".\\moza.ico" ^
+    --noconfirm ^
     start.py 
