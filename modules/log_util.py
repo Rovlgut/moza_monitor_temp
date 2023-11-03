@@ -29,8 +29,9 @@ log_format="[%(asctime)s]:[%(threadName)s]:[%(name)s]:%(levelname)s:%(message)s"
 
 
 package_directory = os.path.dirname(os.path.abspath(__file__))
-log_dir = f'{package_directory}/../logs/{date_now_str}'
-log_error_dir = f'{package_directory}/../logs/{date_now_str}/errors'
+log_base_dir = f'{os.getcwd()}'
+log_dir = f'{log_base_dir}/logs/{date_now_str}'
+log_error_dir = f'{log_base_dir}/logs/{date_now_str}/errors'
 os.makedirs(log_dir, exist_ok=True) # Create log dir
 os.makedirs(log_error_dir, exist_ok=True) # Create log error dir
 
@@ -59,6 +60,11 @@ logger.addHandler(eh)
 
 logger.debug(f"{'#'*50}")
 logger.debug(f"{f' {datetime_now_str} ':#^50}")
+logger.info(f"package_directory: '{package_directory}'")
+logger.info(f"os.getcwd(): '{os.getcwd()}'")
+logger.info(f"os.path.abspath(__file__): '{os.path.abspath(__file__)}'")
+logger.info(f"os.path.dirname(os.path.abspath(__file__)): '{os.path.dirname(os.path.abspath(__file__))}'")
+
 
 logger.info("Completed init logging")
 if console_level == logging.DEBUG: logger.debug("Debug mode for console")
