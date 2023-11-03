@@ -33,14 +33,15 @@ class App(Tk):
 
     def __init__(self, *args, **kwargs) -> None:
         Tk.__init__(self, *args, **kwargs)
-        self.geometry("640x500")
+        self.geometry("650x500")
         self.title('Moza мониторинг температуры')
         icon_decode = base64.b64decode(icon_png)
         icon = PhotoImage(data=icon_decode)
         self.iconphoto(True, icon)
 
         # Variables       
-        self.dates = StringVar()
+        self.date_from = StringVar()
+        self.date_to = StringVar()
         self.time_from = StringVar()
         self.time_to = StringVar()
 
@@ -84,8 +85,8 @@ class App(Tk):
         default_path = os.path.join(os.environ['LOCALAPPDATA'], 'MOZA Pit House\\Motor_Temprature_Log.log')
         # default_path = os.path.join(os.getcwd(), 'Motor_Temprature_Log.log')
         self.entry_file_path.insert(END, default_path)
-        self.entry_file_path.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="ew", padx=5, pady=5, columnspan=5)
-        column_frame_buttons += 5  # next column
+        self.entry_file_path.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="ew", padx=5, pady=5, columnspan=7)
+        column_frame_buttons += 7  # next column
         
         self.button_open_file = ttk.Button(self.frame_buttons, text='Выбрать', command=self.open_file)
         self.button_open_file.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="e", padx=5, pady=5)
@@ -103,12 +104,21 @@ class App(Tk):
         self.label_dates.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(5, 5))
         column_frame_buttons += 1  # next column
 
-        self.combobox_dates = ttk.Combobox(self.frame_buttons, values=self.dates_list, textvariable=self.dates,
+        self.combobox_date_from = ttk.Combobox(self.frame_buttons, values=self.dates_list, textvariable=self.date_from,
                                             state="readonly", width=10)
-        self.combobox_dates.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(5, 5), sticky="w")
+        self.combobox_date_from.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(5, 0), sticky="w")
+        column_frame_buttons += 1  # next column
+        
+        self.label_date_separate = ttk.Label(self.frame_buttons, text="-")
+        self.label_date_separate.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(0, 0), padx=(0, 0))
         column_frame_buttons += 1  # next column
 
-        self.label_time_from = ttk.Label(self.frame_buttons, text="C")
+        self.combobox_date_to = ttk.Combobox(self.frame_buttons, values=self.dates_list, textvariable=self.date_to,
+                                            state="readonly", width=10)
+        self.combobox_date_to.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(0, 5), sticky="w")
+        column_frame_buttons += 1  # next column
+        
+        self.label_time_from = ttk.Label(self.frame_buttons, text="Время")
         self.label_time_from.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(5, 5))
         column_frame_buttons += 1  # next column
 
@@ -118,18 +128,18 @@ class App(Tk):
         self.entry_time_from.insert(END, time_from.strftime("%H:%M"))
         # self.entry_time_from.insert(END, '00:00')
         # self.entry_time_from.insert(END, '18:00')
-        self.entry_time_from.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="ew", padx=5, pady=5)
+        self.entry_time_from.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="ew", padx=(5, 0), pady=5)
         column_frame_buttons += 1  # next column
 
-        self.label_time_to = ttk.Label(self.frame_buttons, text="По")
-        self.label_time_to.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(5, 5))
+        self.label_time_to = ttk.Label(self.frame_buttons, text="-")
+        self.label_time_to.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(0, 0), padx=(0, 0))
         column_frame_buttons += 1  # next column
 
         self.entry_time_to = ttk.Entry(self.frame_buttons, width=10)
         self.entry_time_to.insert(END, time_now.strftime("%H:%M"))
         # self.entry_time_to.insert(END, '23:59')
         # self.entry_time_to.insert(END, '22:00')
-        self.entry_time_to.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="ew", padx=5, pady=5)
+        self.entry_time_to.grid(row=row_frame_buttons, column=column_frame_buttons, sticky="ew", padx=(0, 5), pady=5)
         column_frame_buttons += 1  # next column
 
         self.button_plot = ttk.Button(self.frame_buttons, text='Построить', command=self.start_plot)
@@ -237,8 +247,10 @@ class App(Tk):
         self.update_cb_values()
     
     def update_cb_values(self):
-        self.combobox_dates.config(values=self.dates_list)
-        self.combobox_dates.set(self.dates_list[-1])
+        self.combobox_date_from.config(values=self.dates_list)
+        self.combobox_date_from.set(self.dates_list[-1])
+        self.combobox_date_to.config(values=self.dates_list)
+        self.combobox_date_to.set(self.dates_list[-1])
 
     def start_plot(self):
         if not self.valid_datetime():
@@ -377,8 +389,9 @@ class App(Tk):
     def valid_datetime(self):
         logger.info("Getting date and time")
 
-        plot_date = self.dates.get()
-        if not plot_date:
+        plot_date_from = self.date_from.get()
+        plot_date_to = self.date_to.get()
+        if not plot_date_from or not plot_date_to:
             logger.info("No date. Not open file")
             messagebox.showerror(title="Ошибка", message=f"Не задан день.\nСначала надо открыть файл.")
             return False
@@ -389,17 +402,22 @@ class App(Tk):
         if plot_time_to[1] == ':': plot_time_to = '0' + plot_time_to
 
         try:
-            logger.info(f"date and time from: {plot_date} {plot_time_from}")
-            logger.info(f"date and time to: {plot_date} {plot_time_to}")
-            plot_dt_from = datetime.fromisoformat(f"{plot_date} {plot_time_from}")
-            plot_dt_to = datetime.fromisoformat(f"{plot_date} {plot_time_to}")
+            logger.info(f"date and time from: {plot_date_from} {plot_time_from}")
+            logger.info(f"date and time to: {plot_date_to} {plot_time_to}")
+            plot_dt_from = datetime.fromisoformat(f"{plot_date_from} {plot_time_from}")
+            plot_dt_to = datetime.fromisoformat(f"{plot_date_to} {plot_time_to}")
         except ValueError as e:
             logger.exception(e)
             logger.info("For script not valid date")
-            self.plot_status.set("Не верная дата")
+            self.monitor_status.set("Неверная дата")
             messagebox.showerror(title="Ошибка", message=f"Не верная дата.\nФормат времени HH:MM.\nДиапазон 00:00 - 23:59")
             return False
 
+        if plot_dt_from > plot_dt_to:
+            logger.info("Not valid date range. From > to.")
+            self.monitor_status.set("Неверная дата")
+            messagebox.showerror(title="Ошибка", message=f"Не верная дата.\nДата ОТ опережает дату ДО.")
+            return False
 
         filtered_data = []
         for row in self.log_data:
