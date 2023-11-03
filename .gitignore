@@ -19,6 +19,9 @@ notes.md
 *.7z
 *.zip
 
+# Include
+
+Moza_Temp_Monitor.spec
 
 
 
