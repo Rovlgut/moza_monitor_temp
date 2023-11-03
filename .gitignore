@@ -1,0 +1,19 @@
+# Folder
+
+venv
+logs
+modules/__pycache__
+
+# File
+
+live_data
+Motor_Temprature_Log.log
+
+
+
+
+
+
+
+
+
