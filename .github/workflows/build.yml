@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v1
-        
+
       - name: Install Python
         uses: actions/setup-python@v1
         with:
@@ -34,10 +34,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.head_commit.message }}
-          release_name: ${{ github.event.head_commit.message }}
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }}
           body: |
-            Release v1.2.0
+            Release ${{ github.ref_name }}
           draft: false
           prerelease: false
 
