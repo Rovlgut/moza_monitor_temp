@@ -11,10 +11,13 @@ data
 
 live_data
 Motor_Temprature_Log.log
-*.spec
 moza.png
 moza.ico
 
+# Extensions
+*.spec
+*.7z
+*.zip
 
 
 
