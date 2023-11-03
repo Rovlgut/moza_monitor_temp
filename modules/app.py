@@ -47,6 +47,7 @@ class App(Tk):
 
         self.plot_status = StringVar()
         self.monitor_status = StringVar()
+        self.last_readings = StringVar()
 
         self.__init_window()
 
@@ -161,6 +162,10 @@ class App(Tk):
         self.label_monitor_status = ttk.Label(self.frame_buttons, textvariable=self.monitor_status, text="")
         self.label_monitor_status.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(5, 5))
         column_frame_buttons += 1  # next column
+       
+        self.label_last_readings = ttk.Label(self.frame_buttons, textvariable=self.last_readings, text="")
+        self.label_last_readings.grid(row=row_frame_buttons, column=column_frame_buttons, pady=(5, 5), padx=(5, 5), columnspan=7)
+        column_frame_buttons += 7  # next column
 
         #endregion
         
@@ -495,12 +500,18 @@ class App(Tk):
             log_file = file.readlines()
         
         last_line = log_file[-1]
-        self.live_data.append({
+        logger.debug(f"Last line: '{last_line}'")
+        last_data = {
             "datetime": datetime.fromisoformat(last_line[:19]),
             "controller_temp": float(re.search(r"控制器温度\[([\d\.]+)°C\]", last_line).group(1)),
             "mos_temp": float(re.search(r"MOS温度\[([\d\.]+)°C\]", last_line).group(1)),
             "motor_stator_temp": float(re.search(r"电机定子温度\[([\d\.]+)°C\]", last_line).group(1)),
-        })
+        }
+        self.live_data.append(last_data)
+        last_reading_str = (f"Контролер - {last_data['controller_temp']}°C  "
+                            f"MOSFET - {last_data['mos_temp']}°C  "
+                            f"Мотор статор - {last_data['motor_stator_temp']}°C")
+        self.last_readings.set(last_reading_str)
         if self.live_data[0]['controller_temp'] == None:
             self.live_data.pop(0)
             
