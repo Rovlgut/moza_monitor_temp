@@ -208,7 +208,7 @@ class App(Tk):
 
         log_raw_data = []
         date_set = set()
-        for line in log_file:
+        for i, line in enumerate(log_file):
             date_set.add(datetime.fromisoformat(line[:10]))
             log_raw_data.append({
                 "datetime": datetime.fromisoformat(line[:19]),
@@ -216,6 +216,19 @@ class App(Tk):
                 "mos_temp": float(re.search(r"MOS温度\[([\d\.]+)°C\]", line).group(1)),
                 "motor_stator_temp": float(re.search(r"电机定子温度\[([\d\.]+)°C\]", line).group(1)),
             })
+            if i-1 < 0: continue
+            line_datetime = datetime.fromisoformat(log_file[i][:19])
+            prev_line_datetime = datetime.fromisoformat(log_file[i-1][:19])
+            diff = line_datetime - prev_line_datetime
+            if diff.total_seconds() > 600:
+                log_raw_data.insert(-1, {
+                    "datetime": prev_line_datetime + (diff / 2),
+                    "controller_temp": None,
+                    "mos_temp": None,
+                    "motor_stator_temp": None,
+                })
+
+
         date_list = sorted(date_set)
         date_str_list = list(map(lambda d: d.strftime("%Y-%m-%d"), date_list))
 
@@ -380,7 +393,7 @@ class App(Tk):
             logger.exception(e)
             logger.info("For script not valid date")
             self.plot_status.set("Не верная дата")
-            messagebox.showerror(title="Ошибка", message=f"Не верная дата.\nФормат времени HH:MM.")
+            messagebox.showerror(title="Ошибка", message=f"Не верная дата.\nФормат времени HH:MM.\nДиапазон 00:00 - 23:59")
             return False
 
 
