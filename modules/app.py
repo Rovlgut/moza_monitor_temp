@@ -218,8 +218,13 @@ class App(Tk):
             logger.info("Empty file path")
             return
 
-        with open(file_path, 'r', encoding='utf-8') as file:
-            log_file = file.readlines()
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                log_file = file.readlines()
+        except FileNotFoundError as e:
+            logger.warning(f"File not found. {str(e)}")            
+            messagebox.showerror(title="Ошибка", message=f"Файл '{file_path}' не найден.")
+            return
 
         log_raw_data = []
         date_set = set()
