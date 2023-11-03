@@ -3,12 +3,14 @@
 venv
 logs
 modules/__pycache__
+dist
+build
 
 # File
 
 live_data
 Motor_Temprature_Log.log
-
+*.spec
 
 
 
