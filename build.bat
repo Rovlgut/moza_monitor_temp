@@ -2,6 +2,6 @@ pyinstaller ^
     --onefile ^
     --name "Moza_Temp_Monitor" ^
     --windowed ^
-    --icon ".\\moza.ico" ^
+    --icon "img/moza.ico" ^
     --noconfirm ^
     start.py 
